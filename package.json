@@ -1,6 +1,6 @@
 {
     "name": "cross-domain-utils",
-    "version": "4.0.1",
+    "version": "4.0.2",
     "description": "Window and origin helpers for code that talks across frames and popups: who is my parent, opener or top, is this window closed, is it same-origin, does this origin match that pattern.",
     "keywords": [
         "cross-domain",

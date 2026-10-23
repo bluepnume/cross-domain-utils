@@ -302,6 +302,23 @@ describe('isWindow', () => {
         expect(isWindow(() => undefined)).toBe(false);
     });
 
+    it('is true for a cross-origin popup after it closes', async () => {
+        const popup = openPopup(foreignChildPage);
+
+        await new Promise(resolve => {
+            setTimeout(resolve, 1000);
+        });
+
+        popup.close();
+
+        await new Promise(resolve => {
+            setTimeout(resolve, 300);
+        });
+
+        expect(popup.closed).toBe(true);
+        expect(isWindow(popup)).toBe(true);
+    });
+
     it('says yes for an object that answers to self, and for one that throws on it', () => {
         const selfish : { self ?: unknown } = {};
 

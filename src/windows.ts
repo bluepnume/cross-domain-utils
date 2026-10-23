@@ -289,11 +289,23 @@ export const isWindow = (value : unknown) : value is Window => {
 
         const candidate = value as { self ?: unknown };
 
-        return candidate.self === value;
+        if (candidate.self === value) {
+            return true;
+        }
     } catch {
-        // Reading `self` threw: only a closed cross-origin window does that.
+        // Reading `self` threw: only a cross-origin window does that.
         return true;
     }
+
+    // A closed cross-origin window answers `self` with null, but still
+    // refuses to read anything outside the cross-origin allowlist.
+    try {
+        Reflect.get(value, 'crossDomainUtilsProbe');
+    } catch {
+        return true;
+    }
+
+    return false;
 };
 
 // The iframe element whose window this is, when it is in this document.
