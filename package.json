@@ -1,96 +1,60 @@
 {
-  "name": "@krakenjs/cross-domain-utils",
-  "version": "3.1.0",
-  "description": "Utilities for dealing with cross-domain windows.",
-  "main": "dist/cross-domain-utils.js",
-  "module": "dist/module/index.js",
-  "scripts": {
-    "build": "npm run test && npm run babel && npm run webpack",
-    "webpack": "cross-env NODE_ENV=production babel-node --plugins=transform-es2015-modules-commonjs ./node_modules/.bin/webpack --progress --output-path dist",
-    "babel": "cross-env NODE_ENV=production babel src/ --out-dir dist/module",
-    "karma": "cross-env NODE_ENV=test babel-node --plugins=transform-es2015-modules-commonjs ./node_modules/.bin/karma start",
-    "format": "prettier --write --ignore-unknown .",
-    "format:check": "prettier --check .",
-    "test": "npm run format:check && npm run lint && npm run flow-typed && npm run flow && npm run karma",
-    "lint": "eslint src/ test/",
-    "flow": "flow",
-    "flow-typed": "rm -rf ./flow-typed && flow-typed install",
-    "clean": "rimraf dist coverage",
-    "reinstall": "rimraf flow-typed && rimraf node_modules && npm install && flow-typed install",
-    "prerelease": "npm run clean && npm run build && git add dist && git commit -m 'ci: check in dist folder' || echo 'Nothing to distribute'",
-    "release": "standard-version",
-    "postrelease": "git push && git push --follow-tags && npm publish",
-    "debug": "cross-env NODE_ENV=debug",
-    "prepare": "husky install"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/krakenjs/cross-domain-utils.git"
-  },
-  "standard-version": {
-    "types": [
-      {
-        "type": "feat",
-        "section": "Features"
-      },
-      {
-        "type": "fix",
-        "section": "Bug Fixes"
-      },
-      {
-        "type": "chore",
-        "hidden": false
-      },
-      {
-        "type": "docs",
-        "hidden": false
-      },
-      {
-        "type": "style",
-        "hidden": false
-      },
-      {
-        "type": "refactor",
-        "hidden": false
-      },
-      {
-        "type": "perf",
-        "hidden": false
-      },
-      {
-        "type": "test",
-        "hidden": false
-      },
-      {
-        "type": "ci",
-        "hidden": true
-      }
-    ]
-  },
-  "keywords": [
-    "template"
-  ],
-  "license": "Apache-2.0",
-  "files": [
-    "src/",
-    "dist/"
-  ],
-  "readmeFilename": "README.md",
-  "devDependencies": {
-    "@commitlint/cli": "^16.2.1",
-    "@commitlint/config-conventional": "^16.2.1",
-    "@krakenjs/grumbler-scripts": "^8.0.5",
-    "chai": "^4.2.0",
-    "cross-env": "^7.0.3",
-    "flow-bin": "0.155.0",
-    "flow-typed": "^3.8.0",
-    "husky": "^7.0.4",
-    "lint-staged": "^13.0.3",
-    "mocha": "^4",
-    "prettier": "2.7.1",
-    "standard-version": "^9.3.2"
-  },
-  "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
-  }
+    "name": "cross-domain-utils",
+    "version": "4.0.0",
+    "description": "Window and origin helpers for code that talks across frames and popups: who is my parent, opener or top, is this window closed, is it same-origin, does this origin match that pattern.",
+    "keywords": [
+        "cross-domain",
+        "cross-origin",
+        "iframe",
+        "popup",
+        "window",
+        "postmessage",
+        "cugel"
+    ],
+    "homepage": "https://github.com/bluepnume/cross-domain-utils#readme",
+    "bugs": {
+        "url": "https://github.com/bluepnume/cross-domain-utils/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bluepnume/cross-domain-utils.git"
+    },
+    "license": "Apache-2.0",
+    "author": "Daniel Brain",
+    "type": "module",
+    "sideEffects": false,
+    "engines": {
+        "node": ">=24"
+    },
+    "main": "./dist/src/index.js",
+    "module": "./dist/src/index.js",
+    "types": "./dist/src/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/src/index.d.ts",
+            "import": "./dist/src/index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "cugel-scripts build",
+        "fix": "cugel-scripts fix --changed",
+        "fix:all": "cugel-scripts fix",
+        "imports:missing": "cugel-scripts imports:missing --changed",
+        "lint": "cugel-scripts lint",
+        "test:static": "cugel-scripts static",
+        "test:unit": "cugel-scripts test --coverage",
+        "test:watch": "cugel-scripts test --watch",
+        "test": "npm run test:static && npm run test:unit && npm run build",
+        "prepack": "npm run build"
+    },
+    "devDependencies": {
+        "cugel-scripts": "^0.1.0",
+        "esbuild": "^0.28.0"
+    }
 }

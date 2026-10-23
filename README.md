@@ -1,223 +1,80 @@
-## Cross Domain Utils
+# cross-domain-utils
 
-[![build status][build-badge]][build]
-[![code coverage][coverage-badge]][coverage]
-[![npm version][version-badge]][package]
-[![apache license][license-badge]][license]
+Window and origin helpers for code that talks across frames and popups.
 
-[build-badge]: https://img.shields.io/github/actions/workflow/status/krakenjs/cross-domain-utils/main.yml?branch=main&logo=github&style=flat-square
-[build]: https://github.com/krakenjs/cross-domain-utils/actions/workflows/main.yml?query=workflow:build
-[coverage-badge]: https://img.shields.io/codecov/c/github/krakenjs/cross-domain-utils.svg?style=flat-square
-[coverage]: https://codecov.io/github/krakenjs/cross-domain-utils
-[version-badge]: https://img.shields.io/npm/v/@krakenjs/cross-domain-utils.svg?style=flat-square
-[package]: https://www.npmjs.com/package/@krakenjs/cross-domain-utils
-[license-badge]: https://img.shields.io/npm/l/@krakenjs/cross-domain-utils.svg?style=flat-square
-[license]: https://github.com/krakenjs/cross-domain-utils/blob/main/LICENSE
-
-A set of utilities for dealing with cross-domain windows
-
-## Installation
-
-As of version 3 this package will be published under the `@krakenjs` scope.
-
-```
-npm install @krakenjs/cross-domain-utils
+```sh
+npm install cross-domain-utils
 ```
 
-## Public methods
+```ts
+import { getOpener, getParent, isSameDomain, isWindowClosed, matchDomain } from 'cross-domain-utils';
 
-### `getDomain(win : Window) => string`
+const ancestor = getOpener() ?? getParent();          // who put this window here
+if (ancestor && !isWindowClosed(ancestor)) { ... }
 
-Get the full domain of the specified window, as a string.
-
-- `win` must be a window on the same domain as the current window, or an exception will be raised
-- This can be overridden / mocked by setting `win.mockDomain = 'mock://some-domain.com';`. `mock://` is required to ensure the window can not spoof actual `http://` or `https://` domains
-
-### `getDomainFromUrl(url : string) => string`
-
-Get the full domain from the specified url, as a string.
-
-- it will try to extract the domain from the url string if it starts with well known protocols (`http://`, `https://`, `file://`, and additionally `mock://` urls)
-- if url string does not contain a known protocol, it will try to extract the domain calling `getDomain` using the current window as input
-
-### `getActualDomain(win : Window) => string`
-
-Same as `getDomain` but overriding / mocking is disabled. it will return the real full domain of the specified window.
-
-### `isBlankDomain(win : Window) => boolean`
-
-Returns if the domain for the specified window is blank, or `about:blank`
-
-- `win` must be a window on the same domain as the current window, or an exception will be raised
-- `win` may be a window or iframe that has been newly opened by the current window
-
-### `isSameDomain(win : Window) => boolean`
-
-Returns if the specified window is on the same domain as the current window.
-
-- Does so without raising any errors or console warnings, even in Safari where wrapping the check `try/catch` still raises a console warning.
-
-### `getParent(win : Window) => ?Window`
-
-Gets the parent of the specified window, if the window has a parent.
-
-- Only returns the parent of iframes
-- Returns void if the window is the top-level window
-
-### `getOpener(win : Window) => ?Window`
-
-Gets the opener of the specified window, if the window has an opener.
-
-- Only returns the opener of windows opened with `window.open`
-- Returns void if the window is the top-level window
-
-### `getParents(win : Window) => Array<Window>`
-
-Gets all of the hierarchical parents of the specified window.
-
-- Only returns the parents of iframes
-- Returns a blank array if the window is the top-level window
-
-### `isAncestorParent(ancestor : Window, win : Window) => boolean`
-
-Returns true if the `ancestor` is a direct or non-direct parent of the specified window.
-
-### `getFrames(win : Window) => Array<Window>`
-
-Returns an array of all direct child frames found in a given window.
-
-- Only returns direct children
-
-### `getAllChildFrames(win : Window) => Array<Window>`
-
-Returns an array of all recursive child frames found in a given window, and in the child-frames of that window.
-
-- Recursively searches for all direct and indirect children
-
-### `getTop(win : Window) => Window`
-
-Gets the top-level parent of the specified window.
-
-### `getAllFramesInWindow(win : Window) => Array<Window>`
-
-Returns an array of all recursive child frames found in a given window, and in the child-frames of that window, including the specified window.
-
-- Recursively searches for all direct and indirect children
-
-### `isTop(win : Window) => boolean`
-
-Returns true if the specified window is the top level window, without any parents.
-
-### `isFrameWindowClosed(frame : HTMLIFrameElement) => boolean`
-
-Returns true if the window attached to an iframe element is closed, by checking if the frame is still attached to an open document.
-
-- Prefer `isWindowClosed` when possible
-
-### `isWindowClosed(win : Window) => boolean`
-
-Returns true if a window has been closed
-
-- In IE/Edge, this check is not 100% reliable for frame windows where the frame has been removed from the DOM. Such window objects give no indication that they are closed.
-
-### `getUserAgent(win : Window) => string`
-
-Gets the user agent for the specified window
-
-- Window must be on the same domain as the current window
-- Uses `win.navigator.mockUserAgent` if specified, to allow for mocking / tests.
-
-### `getFrameByName(win : Window, name : string) => ?Window`
-
-Gets a frame window with the given name, if it exists as a child of the specified window.
-
-### `findChildFrameByName(win : Window, name : string) => ?Window`
-
-Recursively searches for a given frame window inside the children specified window.
-
-### `findFrameByName(win : Window, name : string) => ?Window`
-
-Recursively searches for a given frame window inside the entire frame hierarchy of the specified window.
-
-- Searches both the children and the parent windows recursively for the frame.
-
-### `isParent(parent : Window, child : Window) => boolean`
-
-Returns true if the specified parent window is the parent of the specified child window.
-
-### `isOpener(opener : Window, child : Window) => boolean`
-
-Returns true if the specified opener window is the opener of the specified child window.
-
-### `getAncestor(win : Window) => ?Window`
-
-Gets either the parent or the opener of the specified window, if either is present.
-
-### `getAncestors(win : Window) => Array<Window>`
-
-Recursively gets either the parent or the opener of the specified window, if either is present, and returns an array of the entire ancestor hierarchy.
-
-### `isAncestor(ancestor : Window, child : Window) => boolean`
-
-Returns true if the specified ancestor window is the parent or the opener of the specified child window.
-
-### `isPopup(win : Window) => boolean`
-
-Returns true if the specified window has been opened with `window.open` (i.e. if it is a popup window)
-
-### `isIframe(win : Window) => boolean`
-
-Returns true if the specified window has been opened as an iframe.
-
-### `getDistanceFromTop(win : Window) => number`
-
-Gets the numerical distance from the specified window to the top level window in that window's hierarchy.
-
-- If the specified window is at the top, this will return 0.
-
-### `getNthParent(win : Window, n : number) => ?Window`
-
-Gets the window `n` levels up from the specified window, if it exists.
-
-### `isSameTopWindow(win1 : window, win2 : Window) => boolean`
-
-Returns true if the windows are in the same hierarchy, with the same top level window
-
-- Will return false if one of the windows is a popup and the other window is not a frame inside that popup.
-
-### `isWindow(obj : Window) => boolean`
-
-Returns true if the specified object is a window instance
-
-### `onCloseWindow(win : Window, callback : Function, interval : number) => { cancel : Function }`
-
-Calls the callback when the specified window closes, with checks running on the specified interval.
-
-- Returns a listener object with a `.cancel()` method, to stop the loop
-
-### `matchDomain(pattern : (string | RegExp | Array<string>), domain : string) => boolean`
-
-Returns true if the specified domain matches the pattern. The pattern can be one of:
-
-- A literal string
-- A regular expression
-- An array of possible domains as strings
-
-# Tasks
-
-All of the tasks are listed in the package.json file under the scripts section
-
-| Command       |               Description                |
-| ------------- | :--------------------------------------: |
-| npm run build |          Builds the dist files           |
-| npm test      | Runs the test suite. Lint + Type + Karma |
-
-# Debugging
-
-Run the debug task and pass the next tasks as argument.
-
+isSameDomain(someFrame);                                // may I read it
+matchDomain([ 'https://a.com', /\.b\.com$/u ], origin); // does this origin fit
 ```
-npm run debug -- npm run build
-npm run debug -- npm test
-npm run debug -- npm run karma -- --browsers=Chrome
-```
+
+ES modules, TypeScript types included, no dependencies, ES2019 syntax. For current browsers: nothing here exists to work around an old one.
+
+## What's here
+
+Every function takes a `Window`, from any origin, and never throws on one it can't look inside; reads the browser allows across origins (`parent`, `top`, `opener`, `closed`, `frames`, `length`, named child frames, `self`) are used directly, and the ones it doesn't (`location`, `name`, `document`) are behind `isSameDomain`.
+
+**Where a window sits**
+
+| Function | Gives |
+| --- | --- |
+| `getParent(win?)`, `getParents(win)` | The parent frame, or every ancestor frame, none for a top |
+| `getOpener(win?)` | The window that opened a popup; never set for an iframe |
+| `getAncestor(win?)`, `getAncestors(win)` | Opener for a popup, parent for a frame, and so on up |
+| `getTop(win?)`, `isTop(win)` | The top of a frame tree |
+| `getNextOpener(win?)`, `getUltimateTop(win?)` | Across popup chains: the top's opener, and the top nothing opened |
+| `isIframe(win?)`, `isPopup(win?)`, `isFullpage(win?)`, `getWindowType(win?)` | What kind of window it is |
+| `getDistanceFromTop(win?)`, `getNthParent(win, n?)`, `getNthParentFromTop(win, n?)` | Position in the frame tree |
+| `isParent(win, frame)`, `isOpener(parent, child)`, `isAncestor(parent, child)`, `isSameTopWindow(a, b)` | Relationships |
+
+**Frames**
+
+| Function | Gives |
+| --- | --- |
+| `getFrames(win)`, `getAllChildFrames(win)` | Direct children, or the whole subtree |
+| `getAllFramesInWindow(win)`, `getAllWindows(win?)` | Every frame in the tree, and every frame up the opener chain |
+| `getFrameByName(win, name)`, `findChildFrameByName(win, name)`, `findFrameByName(win, name)` | By name: a direct child, anywhere below, anywhere in the tree |
+| `getFrameForWindow(win)` | The `<iframe>` element for a window in this document |
+
+**Lifetime**
+
+| Function | Gives |
+| --- | --- |
+| `isWindowClosed(win)`, `isFrameWindowClosed(frame)` | Closed, or removed from the page |
+| `onCloseWindow({ win, callback, delay?, maxtime? })` | Poll until it closes; returns `{ cancel }` |
+| `closeWindow(win)` | Removes an iframe, closes a popup |
+
+**Origins**
+
+| Function | Gives |
+| --- | --- |
+| `getDomain(win?)` | `https://host:port`, `file://`, or a blank frame's inherited origin |
+| `isSameDomain(win)`, `assertSameDomain(win)`, `canReadFromWindow(win)` | May this side read it |
+| `matchDomain(pattern, origin)`, `stringifyDomainPattern(pattern)` | A `DomainMatcher` is a string, a RegExp, a list of either, or `*` |
+| `getDomainFromUrl(url)`, `isCurrentDomain(domain)`, `isBrowser()` | Odds and ends |
+| `getProtocol(win?)`, `isFileProtocol(win?)`, `isAboutProtocol(win?)`, `isBlankDomain(win)` | Protocol checks |
+
+**Other**
+
+| Function | Gives |
+| --- | --- |
+| `isWindow(value)` | Whether a value is a window, of any origin |
+| `submitForm({ url, target, method?, body? })` | Navigate a named window by form submission, the only way to POST into one |
+
+Constants: `WILDCARD`, `PROTOCOL`, `WINDOW_TYPE`. Types: `DomainMatcher`, `WindowType`, and `CrossDomainWindowType` / `SameDomainWindowType` as aliases of `Window` for code written against earlier versions.
+
+## Changes in 4.0
+
+Published as `cross-domain-utils` again (3.x lived under `@krakenjs`). ES modules and TypeScript only. Gone, because no supported browser needs them: the Internet Explorer error-message checks, user-agent sniffing (`getUserAgent`), the orphaned-iframe tracking (`linkFrameWindow`), the `mock://` domain machinery for tests (`isMockDomain`, `normalizeMockUrl`, `mockDomain`, `mockclosed`, `mockUserAgent`), the `window.constructor` and property-descriptor tricks, and the separate `getActualDomain` / `isActuallySameDomain` (the plain functions now do what those did). `isSameDomain` is now simply "can this side read the window's location", which is the rule browsers enforce. `getTop` and `isSameTopWindow` no longer search child frames as a fallback. `submitForm` moved here from belter. The test suite runs against real same-origin, cross-origin and nested frames and real popups.
+
+## License
+
+Apache-2.0

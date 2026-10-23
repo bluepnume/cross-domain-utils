@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file. See [standa
 ## [3.1.0](https://github.com/krakenjs/cross-domain-utils/compare/v3.0.2...v3.1.0) (2023-06-12)
 
 
+## [4.0.0](https://github.com/bluepnume/cross-domain-utils/compare/v3.1.0...v4.0.0) (2026-10-22)
+
+### ⚠ BREAKING CHANGES
+
+* published as `cross-domain-utils` (unscoped) again; ES modules and TypeScript only
+* removed: `getUserAgent`, `linkFrameWindow`, `isMockDomain`, `normalizeMockUrl`, `isMockProtocol`, `getActualDomain`, `getActualProtocol`, `isActuallySameDomain`, and every `mock*` test hook
+* `isWindowClosed` no longer takes an `allowMock` argument
+* `onCloseWindow` takes one options object: `{ win, callback, delay?, maxtime? }`
+* `getTop` / `isSameTopWindow` no longer fall back to searching child frames
+* `CrossDomainWindowType` and `SameDomainWindowType` are aliases of `Window`
+
+* added `submitForm`, `getWindowType`, `canReadFromWindow`
+* ported to cugel-scripts; ES2019 output with `main`/`module`/`types` fallbacks next to `exports`
+* tests run against real same-origin, cross-origin and nested frames and real popups
+
 ### Features
 
 * grumbler-scripts@8 ([#38](https://github.com/krakenjs/cross-domain-utils/issues/38)) ([5197ff3](https://github.com/krakenjs/cross-domain-utils/commit/5197ff33a61b1b5c766d284c61716098c384d268))
