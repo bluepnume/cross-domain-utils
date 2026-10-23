@@ -9,11 +9,11 @@ import {
     isWindowClosed, onCloseWindow, submitForm, WINDOW_TYPE
 } from '../src';
 
-// The vitest page is served from one host; the same server answers on the
-// other loopback name, which gives a second origin for cross-origin frames.
-const otherOrigin = location.origin.includes('127.0.0.1')
-    ? location.origin.replace('127.0.0.1', 'localhost')
-    : location.origin.replace('localhost', '127.0.0.1');
+// The test page is served on `localhost`; the same server answers at the
+// IPv6 loopback literal, which the browser treats as a second origin.
+const otherOrigin = location.hostname === 'localhost'
+    ? `http://[::1]:${ location.port }`
+    : `http://localhost:${ location.port }`;
 
 const frames : Array<HTMLIFrameElement> = [];
 const popups : Array<Window> = [];
